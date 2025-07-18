@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -9,16 +9,26 @@ import {
   TableRow,
 } from "../ui/table.jsx";
 
-import { Checkbox } from "../ui/checkbox.jsx";
-import { Label } from "../ui/label.jsx";
 import { Button } from "../ui/button.jsx";
 import { Input } from "../ui/input.jsx";
-import { Edit, PlusCircle, Search, Trash2 } from "lucide-react";
+import { Edit, Search, Trash2 } from "lucide-react";
 
 import { Link } from "react-router-dom";
 import NewProduct from "./NewProduct.jsx";
+import axios from "axios";
 
 const Products = () => {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const axiosGet = async () => {
+      const { data } = await axios.get("/products");
+
+      setProducts(data);
+    };
+    axiosGet();
+  }, []);
+
   return (
     <div className="p-6 max-w-4xl mx-auto flex flex-col gap-5">
       <div className="flex flex-col gap-2">
@@ -37,7 +47,7 @@ const Products = () => {
             Filtrar Resultados
           </Button>
         </form>
-        <NewProduct />
+        <NewProduct products={products} setProducts={setProducts} />
       </div>
 
       <div className="border-2 border-zinc-600  rounded-2xl ">
@@ -55,16 +65,19 @@ const Products = () => {
             </TableRow>
           </TableHeader>
           <TableBody className="text-base">
-            {Array.from({ length: 10 }).map((product, index) => {
+            {products.map((product, index) => {
               return (
                 <TableRow key={index}>
-                  <TableCell>{index}</TableCell>
-                  <TableCell>Produto {index}</TableCell>
-                  <TableCell>R$ 1000,00</TableCell>
+                  <TableCell>{product.id}</TableCell>
+                  <TableCell>{product.name}</TableCell>
+                  <TableCell>
+                    R$ {product.price.toLocaleString("pt-BR")}
+                  </TableCell>
+
                   <TableCell>
                     <div className="flex items-center justify-center gap-4">
                       <Link
-                        to={`/edit/${index}`}
+                        to={`/edit/${product.id}`}
                         variant="ghost"
                         size="icon"
                         className="flex items-center justify-center h-12 w-12 rounded-xl bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 hover:text-blue-300 hover:scale-110 transition-all duration-200 border border-blue-500/20 hover:border-blue-400/40 shadow-lg hover:shadow-blue-500/25"

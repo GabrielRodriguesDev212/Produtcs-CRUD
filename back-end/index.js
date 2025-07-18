@@ -1,10 +1,12 @@
 import express from "express";
 import "dotenv/config";
+import cors from 'cors'
 import pool from "./db.js";
 const { PORT } = process.env
 
 const app = express();
 app.use(express.json())
+app.use(cors({ origin: 'http://localhost:5173' }))
 
 app.listen(PORT, () => {
 
@@ -35,8 +37,12 @@ app.post('/products', async (req, res) => {
             [nameProduct, quantityProduct, priceProduct])
         res.status(201).json(result.rows[0])
     } catch (error) {
-
+        res.status(500).json(error)
     }
 
 
 })
+
+
+
+

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogClose,
@@ -22,10 +22,35 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select.jsx";
+import axios from "axios";
 const NewProduct = () => {
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState("");
+  const [quantity, setQuantity] = useState("");
+  const [category, setCategory] = useState("");
+  const [open, setOpen] = useState(false);
+
+  const createProduct = async (e) => {
+    e.preventDefault();
+    try {
+      const data = await axios.post("/products", {
+        nameProduct: name,
+        priceProduct: price,
+        quantityProduct: quantity,
+      });
+      setName("");
+      setPrice("");
+      setQuantity("");
+
+      setOpen(false);
+    } catch (error) {
+      console.log("Erro ao criar o produto", error);
+    }
+  };
+
   return (
     <div>
-      <Dialog>
+      <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button>
             <PlusCircle className="w-4 h-4 mr-1" />
@@ -42,7 +67,7 @@ const NewProduct = () => {
               Digite as informações do Produto
             </DialogDescription>
           </DialogHeader>
-          <form className="space-y-6 ">
+          <form className="space-y-6 " onSubmit={createProduct}>
             <div className="grid grid-cols-4 items-center text-right ">
               <Label htmlFor="name">Nome</Label>
               <Input
@@ -50,11 +75,15 @@ const NewProduct = () => {
                 placeholder="Nome do Produto"
                 autoComplete="off"
                 className="col-span-3"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
               />
             </div>
             <div className="grid grid-cols-4 items-center  ">
               <Label htmlFor="price">Preço</Label>
               <Input
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
                 autoComplete="off"
                 type="number"
                 id="price"
@@ -64,10 +93,28 @@ const NewProduct = () => {
                 }
               />
             </div>
-
             <div className="grid grid-cols-4 items-center  ">
+              <Label htmlFor="quantity">Quantidade</Label>
+              <Input
+                value={quantity}
+                onChange={(e) => setQuantity(e.target.value)}
+                autoComplete="off"
+                type="number"
+                id="quantity"
+                placeholder="5"
+                className={
+                  "col-span-3 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-moz-appearance]:textfield"
+                }
+              />
+            </div>
+
+            {/* <div className="grid grid-cols-4 items-center  ">
               <Label htmlFor="select">Categoria</Label>
-              <Select id="select">
+              <Select
+                id="select"
+                value={category}
+                onValueChange={(value) => setCategory(value)}
+              >
                 <SelectTrigger className="col-span-3 w-full">
                   <SelectValue placeholder="Categoria"></SelectValue>
                 </SelectTrigger>
@@ -81,7 +128,7 @@ const NewProduct = () => {
                   </SelectGroup>
                 </SelectContent>
               </Select>
-            </div>
+            </div> */}
 
             <DialogFooter>
               <DialogClose asChild className={"py-2"}>
