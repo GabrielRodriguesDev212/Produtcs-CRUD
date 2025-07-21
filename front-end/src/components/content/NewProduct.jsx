@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from "../ui/select.jsx";
 import axios from "axios";
-const NewProduct = () => {
+const NewProduct = ({ setProducts, products }) => {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [quantity, setQuantity] = useState("");
@@ -33,11 +33,13 @@ const NewProduct = () => {
   const createProduct = async (e) => {
     e.preventDefault();
     try {
-      const data = await axios.post("/products", {
+      const { data } = await axios.post("/products", {
         nameProduct: name,
         priceProduct: price,
         quantityProduct: quantity,
       });
+
+      setProducts([...products, data]);
       setName("");
       setPrice("");
       setQuantity("");

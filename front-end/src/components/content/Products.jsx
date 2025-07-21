@@ -19,6 +19,7 @@ import axios from "axios";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
+  const [total, setTotal] = useState("");
 
   useEffect(() => {
     const axiosGet = async () => {
@@ -28,6 +29,18 @@ const Products = () => {
     };
     axiosGet();
   }, []);
+
+  const deleteProduct = async (id) => {
+    try {
+      const { data } = await axios.delete("/products", {
+        data: { id },
+      });
+      console.log("Produto deletado:", data);
+      setProducts((prev) => prev.filter((product) => product.id !== id));
+    } catch (error) {
+      console.error("Erro ao deletar produto:", error);
+    }
+  };
 
   return (
     <div className="p-6 max-w-4xl mx-auto flex flex-col gap-5">
@@ -71,7 +84,7 @@ const Products = () => {
                   <TableCell>{product.id}</TableCell>
                   <TableCell>{product.name}</TableCell>
                   <TableCell>
-                    R$ {product.price.toLocaleString("pt-BR")}
+                    R$ {product.price.toLocaleString("pt-BR ")}
                   </TableCell>
 
                   <TableCell>
@@ -88,7 +101,7 @@ const Products = () => {
                         variant="ghost"
                         size="icon"
                         className="h-12 w-12 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 hover:text-red-300 hover:scale-110 transition-all duration-200 border border-red-500/20 hover:border-red-400/40 shadow-lg hover:shadow-red-500/25"
-                        onClick={() => handleDelete(product.id)}
+                        onClick={() => deleteProduct(product.id)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
