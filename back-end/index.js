@@ -87,10 +87,11 @@ app.delete('/products', async (req, res) => {
 app.put('/products/:id', async (req, res) => {
 
     const { id } = req.params
+    const { name, price, quantity } = req.body
 
     try {
-        const result = await pool.query(`DELETE from products WHERE id = $1 RETURNING *`,
-            [id])
+        const result = await pool.query(`UPDATE products SET name = $1, price = $2, quantity = $3 WHERE id = $4 RETURNING *`,
+            [name, price, quantity, id])
 
         if (result.rowCount === 0) {
             return res.status(404).json({ message: 'Produto não encontrado.' });

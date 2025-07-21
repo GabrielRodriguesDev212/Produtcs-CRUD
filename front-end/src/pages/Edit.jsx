@@ -13,12 +13,13 @@ import { Label } from "@/components/ui/label";
 import axios from "axios";
 import { ArrowLeft } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, Navigate, useParams } from "react-router-dom";
 
 const Edit = () => {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [quantity, setQuantity] = useState("");
+  const [redirect, setRedirect] = useState(false);
   const { id } = useParams();
   useEffect(() => {
     const axiosGet = async () => {
@@ -28,7 +29,6 @@ const Edit = () => {
         setName(data.name);
         setPrice(data.price);
         setQuantity(data.quantity);
-
         console.log(data);
       } else {
         console.log("ID do produto não encontrado");
@@ -36,6 +36,24 @@ const Edit = () => {
     };
     axiosGet();
   }, [id]);
+
+  const handleEdit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const result = await axios.put(`/products/${id}`, {
+        name,
+        price,
+        quantity,
+      });
+      setRedirect(true);
+      console.log("O produto foi atualizado", result.data);
+    } catch (error) {
+      console.error("Deu algum erro:", error);
+    }
+  };
+
+  if (redirect) return <Navigate to={"/"} />;
 
   return (
     <div className="flex flex-col justify-center items-center py-8 ">
@@ -53,7 +71,7 @@ const Edit = () => {
             </CardAction>
           </CardHeader>
           <CardContent>
-            <form className="space-y-6">
+            <form className="space-y-6" onSubmit={handleEdit}>
               <div className="grid grid-cols-4 items-center ">
                 <Label
                   htmlFor="name"
@@ -102,11 +120,13 @@ const Edit = () => {
                   }
                 />
               </div>
+              <CardFooter className={"flex justify-center "}>
+                <Button type="submit" className={"w-full max-w-68"}>
+                  Salvar informações
+                </Button>
+              </CardFooter>
             </form>
           </CardContent>
-          <CardFooter className={"flex justify-center "}>
-            <Button className={"w-full max-w-68"}>Salvar informações</Button>
-          </CardFooter>
         </Card>
       </div>
     </div>
